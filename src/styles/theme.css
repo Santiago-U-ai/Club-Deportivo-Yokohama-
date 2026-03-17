@@ -1,0 +1,23 @@
+.hero{
+
+background:url("https://images.unsplash.com/photo-1555597673-b21d5c935865");
+
+background-size:cover;
+
+color:white;
+
+padding:150px 0;
+
+}
+
+.hero h1{
+
+text-shadow:2px 2px 10px black;
+
+}
+
+body{
+
+font-family:'Poppins',sans-serif;
+
+}
