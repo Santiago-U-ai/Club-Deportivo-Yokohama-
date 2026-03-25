@@ -2,7 +2,7 @@ import axios from "axios";
 import { supabase } from "./supabase";
 
 const API = axios.create({
-  baseURL: ["http://localhost:5000/api", "https://club-deportivo-yokohama.vercel.app/"],
+  baseURL: ["http://localhost:5000/api", "https://club-deportivo-yokohama.vercel.app"],
 });
 
 // Interceptor para agregar token de auth
