@@ -1,58 +1,57 @@
-import {useEffect,useState} from "react"
-import API from "../services/api"
+import { useEffect, useState } from "react";
+import API from "../services/api";
+import { useParams } from "react-router-dom";
 
-export default function Pagos(){
+export default function Pagos() {
 
-const [pagos,setPagos] = useState([])
+  const { id } = useParams();
 
-useEffect(()=>{
+  const [pagos, setPagos] = useState([]);
 
-API.get("/pagos")
+  useEffect(() => {
 
-.then(res=>setPagos(res.data))
+    API.get(`/pagos/${id}`)
+      .then(res => setPagos(res.data));
 
-},[])
+  }, []);
 
-return(
+  return (
 
-<div className="content">
+    <div className="container mt-5">
 
-<h2>Pagos</h2>
+      <h2>Historial de Pagos</h2>
 
-<table className="table">
+      <table className="table table-bordered">
 
-<thead>
+        <thead>
 
-<tr>
+          <tr>
+            <th>Mes</th>
+            <th>Valor</th>
+            <th>Estado</th>
+          </tr>
 
-<th>Alumno</th>
-<th>Mes</th>
-<th>Estado</th>
+        </thead>
 
-</tr>
+        <tbody>
 
-</thead>
+          {pagos.map(p => (
 
-<tbody>
+            <tr key={p._id}>
 
-{pagos.map(p=>(
+              <td>{p.mes}</td>
+              <td>${p.valor}</td>
+              <td>{p.estado}</td>
 
-<tr key={p._id}>
+            </tr>
 
-<td>{p.alumno}</td>
-<td>{p.mes}</td>
-<td>{p.estado}</td>
+          ))}
 
-</tr>
+        </tbody>
 
-))}
+      </table>
 
-</tbody>
+    </div>
 
-</table>
-
-</div>
-
-)
-
+  );
 }

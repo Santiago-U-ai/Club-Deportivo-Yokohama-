@@ -1,140 +1,184 @@
-import { useEffect, useState } from "react"
-import axios from "axios"
-import Navbar from "../components/Navbar"
+import { useState, useEffect, useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
+import Navbar from "../components/Navbar";
+import { getStudentData, getStudentPayments } from "../services/api";
+import "../styles/landing.css";
 
-export default function Dashboard(){
+export default function Dashboard() {
+  const { user } = useContext(AuthContext);
+  const [student, setStudent] = useState(null);
+  const [payments, setPayments] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-const [stats,setStats] = useState({
-alumnos:0,
-ingresos:0,
-pendientes:0,
-vencimientos:0
-})
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [studentRes, paymentsRes] = await Promise.all([
+          getStudentData(),
+          getStudentPayments(),
+        ]);
 
-const [alumnos,setAlumnos] = useState([])
+        let alumnoData = studentRes.data;
+        if (Array.isArray(alumnoData)) {
+          alumnoData = alumnoData.find((item) => item.supabaseId === user?.id);
+        }
 
-useEffect(()=>{
+        let pagoData = paymentsRes.data;
+        if (Array.isArray(pagoData) && alumnoData) {
+          pagoData = pagoData.filter((p) => p.alumno === alumnoData.nombre);
+        }
 
-cargarDatos()
+        setStudent(alumnoData);
+        setPayments(pagoData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-},[])
+    if (user) {
+      fetchData();
+    }
+  }, [user]);
 
-const cargarDatos = async()=>{
+  if (loading) {
+    return <div className="content">Cargando...</div>;
+  }
 
-try{
+  if (!student) {
+    return <div className="content">No se encontró información del alumno</div>;
+  }
 
-const res = await axios.get("http://localhost:5000/api/dashboard")
+  // Calcular meses de deuda y valor a deber
+  const pendingPayments = payments.filter((p) => p.estado === "pendiente");
+  const monthsDebt = pendingPayments.map((p) => p.mes);
+  const amountOwed = pendingPayments.reduce(
+    (sum, p) => sum + (p.monto || 500),
+    0,
+  );
 
-setStats(res.data.stats)
-setAlumnos(res.data.alumnos)
+  // Horarios de entrenamiento (asumiendo horarios fijos)
+  const trainingSchedules = [
+    { day: "Lunes", time: "18:00 - 20:00" },
+    { day: "Miércoles", time: "18:00 - 20:00" },
+    { day: "Viernes", time: "18:00 - 20:00" },
+  ];
 
-}catch(err){
+  return (
+    <div>
+      <Navbar />
+      <div className="container mt-5">
+        <div className="welcome-banner">
+          <div className="container-fluid py-5">
+            <h1 className="display-5 fw-bold">Dashboard - {student.nombre}</h1>
+            <p className="col-md-8 fs-4">
+              Bienvenido al panel de control. Aquí puedes ver tus pagos, deudas
+              y horarios de entrenamiento.
+            </p>
+          </div>
+        </div>
 
-console.log(err)
+        <div className="row text-center mb-4">
+          <div className="col-md-4 mb-3">
+            <div className="card h-100 border-primary shadow-sm">
+              <div className="card-body">
+                <h5 className="card-title text-primary">Pagos pendientes</h5>
+                <p className="card-text fs-2 font-weight-bold">
+                  {pendingPayments.length}
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="col-md-4 mb-3">
+            <div className="card h-100 border-primary shadow-sm">
+              <div className="card-body">
+                <h5 className="card-title text-primary">Meses de deuda</h5>
+                <p className="card-text fs-2 font-weight-bold">
+                  {monthsDebt.length ? monthsDebt.join(", ") : "Sin deudas"}
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="col-md-4 mb-3">
+            <div className="card h-100 border-primary shadow-sm">
+              <div className="card-body">
+                <h5 className="card-title text-primary">Valor a deber</h5>
+                <p className="card-text fs-2 font-weight-bold">
+                  ${amountOwed.toLocaleString()}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
 
-}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+            gap: "20px",
+            marginTop: "20px",
+          }}
+        >
+          {/* Horarios de Entrenamiento */}
+          <div
+            style={{
+              border: "1px solid #ccc",
+              padding: "20px",
+              borderRadius: "8px",
+            }}
+          >
+            <h3>Horarios de Entrenamiento</h3>
+            <ul>
+              {trainingSchedules.map((schedule, index) => (
+                <li key={index}>
+                  <strong>{schedule.day}:</strong> {schedule.time}
+                </li>
+              ))}
+            </ul>
+          </div>
 
-}
+          {/* Meses de Deuda */}
+          <div
+            style={{
+              border: "1px solid #ccc",
+              padding: "20px",
+              borderRadius: "8px",
+            }}
+          >
+            <h3>Meses de Deuda</h3>
+            {monthsDebt.length > 0 ? (
+              <ul>
+                {monthsDebt.map((month, index) => (
+                  <li key={index}>{month}</li>
+                ))}
+              </ul>
+            ) : (
+              <p>No hay deudas pendientes</p>
+            )}
+          </div>
 
-return(
-
-<div>
-
-<Navbar/>
-
-<div className="container mt-4">
-
-<h2 className="mb-4">Dashboard Administrativo</h2>
-
-<div className="row">
-
-<div className="col-md-3">
-<div className="card text-center shadow">
-<div className="card-body">
-<h5>Total Alumnos</h5>
-<h2 className="text-primary">{stats.alumnos}</h2>
-</div>
-</div>
-</div>
-
-<div className="col-md-3">
-<div className="card text-center shadow">
-<div className="card-body">
-<h5>Ingresos del mes</h5>
-<h2 className="text-success">${stats.ingresos}</h2>
-</div>
-</div>
-</div>
-
-<div className="col-md-3">
-<div className="card text-center shadow">
-<div className="card-body">
-<h5>Pagos pendientes</h5>
-<h2 className="text-danger">{stats.pendientes}</h2>
-</div>
-</div>
-</div>
-
-<div className="col-md-3">
-<div className="card text-center shadow">
-<div className="card-body">
-<h5>Vencen pronto</h5>
-<h2 className="text-warning">{stats.vencimientos}</h2>
-</div>
-</div>
-</div>
-
-</div>
-
-<hr className="my-5"/>
-
-<h4>Alumnos recientes</h4>
-
-<table className="table table-striped">
-
-<thead>
-
-<tr>
-<th>Nombre</th>
-<th>Email</th>
-<th>Estado</th>
-<th>Vencimiento</th>
-</tr>
-
-</thead>
-
-<tbody>
-
-{alumnos.map((a)=>(
-<tr key={a._id}>
-
-<td>{a.nombre}</td>
-<td>{a.email}</td>
-<td>
-
-{a.estado === "activo" && (
-<span className="badge bg-success">Activo</span>
-)}
-
-{a.estado === "pendiente" && (
-<span className="badge bg-danger">Pendiente</span>
-)}
-
-</td>
-
-<td>{a.vencimiento}</td>
-
-</tr>
-))}
-
-</tbody>
-
-</table>
-
-</div>
-
-</div>
-
-)
-
+          {/* Valor a Deber */}
+          <div
+            style={{
+              border: "1px solid #ccc",
+              padding: "20px",
+              borderRadius: "8px",
+            }}
+          >
+            <h3>Valor a Deber</h3>
+            <p
+              style={{
+                fontSize: "24px",
+                fontWeight: "bold",
+                color: amountOwed > 0 ? "red" : "green",
+              }}
+            >
+              ${amountOwed.toLocaleString()}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }

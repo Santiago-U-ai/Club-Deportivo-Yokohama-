@@ -1,0 +1,16 @@
+body{
+background:#f4f6f9;
+}
+
+h1,h2,h3{
+color:#1E3A8A;
+}
+
+.btn-primary{
+background:#1E3A8A;
+border:none;
+}
+
+.navbar{
+background:#1E3A8A !important;
+}

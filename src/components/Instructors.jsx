@@ -12,17 +12,17 @@ return(
 
 <div className="col-md-6">
 
-<h4>Sensei Carlos</h4>
+<h4>Sensei Carolina</h4>
 
-<p>Cinturón Negro 5° Dan</p>
+<p>Cinturón Negro 3° Dan</p>
 
 </div>
 
 <div className="col-md-6">
 
-<h4>Sensei Miguel</h4>
+<h4>Sensei Sandra</h4>
 
-<p>Cinturón Negro 4° Dan</p>
+<p>Cinturón Negro 3° Dan</p>
 
 </div>
 

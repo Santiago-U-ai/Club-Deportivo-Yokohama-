@@ -3,7 +3,7 @@ import API from "../services/api"
 
 export default function Alumnos(){
 
-const [alumnos,setAlumnos] = useState([])
+const [alumnos,setAlumnos] = useState([]) 
 
 useEffect(()=>{
 
