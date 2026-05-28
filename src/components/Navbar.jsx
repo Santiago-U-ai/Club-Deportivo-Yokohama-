@@ -13,6 +13,9 @@ export default function Navbar() {
           <Link className="btn btn-outline-light" to="/dashboard">
             Dashboard
           </Link>
+          <Link className="btn btn-outline-light" to="/dashboard#agendar-clase">
+            Agendar Clase
+          </Link>
           <Link className="btn btn-outline-light" to="/alumnos">
             Alumnos
           </Link>

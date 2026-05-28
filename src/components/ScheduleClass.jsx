@@ -49,7 +49,10 @@ export default function ScheduleClass() {
   };
 
   return (
-    <section className="schedule-section card mb-4 shadow-sm border-primary">
+    <section
+      id="agendar-clase"
+      className="schedule-section card mb-4 shadow-sm border-primary"
+    >
       <div className="card-body">
         <div className="d-flex justify-content-between align-items-start flex-column flex-md-row gap-3">
           <div>
