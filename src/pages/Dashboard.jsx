@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import Navbar from "../components/Navbar";
+import ScheduleClass from "../components/ScheduleClass";
 import { getStudentData, getStudentPayments } from "../services/api";
 import "../styles/landing.css";
 
@@ -111,6 +112,8 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
+
+        <ScheduleClass />
 
         <div
           style={{
