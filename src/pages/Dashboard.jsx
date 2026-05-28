@@ -1,12 +1,10 @@
-import { useState, useEffect, useContext } from "react";
-import { AuthContext } from "../context/AuthContext";
+import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import ScheduleClass from "../components/ScheduleClass";
 import { getStudentData, getStudentPayments } from "../services/api";
 import "../styles/landing.css";
 
 export default function Dashboard() {
-  const { user } = useContext(AuthContext);
   const [student, setStudent] = useState(null);
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -21,7 +19,7 @@ export default function Dashboard() {
 
         let alumnoData = studentRes.data;
         if (Array.isArray(alumnoData)) {
-          alumnoData = alumnoData.find((item) => item.supabaseId === user?.id);
+          alumnoData = alumnoData[0] || null;
         }
 
         let pagoData = paymentsRes.data;
@@ -38,10 +36,8 @@ export default function Dashboard() {
       }
     };
 
-    if (user) {
-      fetchData();
-    }
-  }, [user]);
+    fetchData();
+  }, []);
 
   if (loading) {
     return <div className="content">Cargando...</div>;
