@@ -8,6 +8,7 @@
       "source": "/api/:path*",
       "destination": "https://yokohama-1.onrender.com/api/:path*"
     }
+    
   ],
   "headers": [
     {
