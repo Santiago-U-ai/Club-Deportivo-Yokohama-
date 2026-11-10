@@ -1,23 +1,47 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import "./App.css";
+import { useAuth } from "./context/auth-context";
+import Login from "./pages/Login";
+import AdminDashboard from "./pages/AdminDashboard";
 
-import Landing from "./pages/Landing";
-import Dashboard from "./pages/Dashboard";
-import Alumnos from "./pages/Alumnos";
-import Pagos from "./pages/Pagos";
-import SubirComprobante from "./pages/SubirComprobante";
+export default function App() {
+  const { session, role, loading, logout, reloadProfile } = useAuth();
 
-function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/alumnos" element={<Alumnos />} />
-        <Route path="/pagos" element={<Pagos />} />
-        <Route path="/subir" element={<SubirComprobante />} />
-      </Routes>
-    </BrowserRouter>
-  );
+  if (loading) {
+    return <p className="app-splash">Cargando sistema...</p>;
+  }
+
+  if (!session) {
+    return <Login />;
+  }
+
+  if (!role) {
+    return (
+      <div className="app-splash">
+        <p>No se pudo cargar tu perfil.</p>
+        <div className="splash-actions">
+          <button type="button" onClick={() => reloadProfile()}>
+            Reintentar
+          </button>
+          <button type="button" onClick={logout}>
+            Cerrar sesión
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (role !== "admin") {
+    return (
+      <div className="app-splash">
+        <p>Esta aplicación es exclusiva para administradores.</p>
+        <div className="splash-actions">
+          <button type="button" onClick={logout}>
+            Cerrar sesión
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return <AdminDashboard />;
 }
-
-export default App;

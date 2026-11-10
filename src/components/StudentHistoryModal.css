@@ -1,0 +1,194 @@
+/* Modal de historial: más ancho que los modales de alta/edición */
+.modal-content.dark-modal.history-modal {
+  display: flex;
+  flex-direction: column;
+  max-width: 860px;
+  max-height: 90vh;
+  overflow: hidden;
+}
+
+.history-modal .modal-header {
+  margin-bottom: 16px;
+}
+
+/* Resumen de mensualidades */
+.history-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.history-summary > div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 12px 14px;
+  background: var(--ink-0);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+}
+
+.history-summary strong {
+  color: var(--paper);
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.history-summary span {
+  color: var(--paper-faint);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+/* Alta / edición de un mes */
+.history-form {
+  display: grid;
+  grid-template-columns: 1.15fr 0.9fr 0.9fr auto;
+  align-items: end;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.history-form .form-group {
+  margin-bottom: 0;
+}
+
+.history-form .save-btn {
+  height: 40px;
+  padding: 0 18px;
+  white-space: nowrap;
+}
+
+/* Lista con scroll */
+.history-list {
+  flex: 1;
+  min-height: 80px;
+  padding-right: 4px;
+  overflow-y: auto;
+}
+
+.history-table {
+  min-width: 640px;
+  background: transparent;
+}
+
+.history-table th,
+.history-table td {
+  padding: 10px;
+  vertical-align: middle;
+}
+
+.history-table th:first-child,
+.history-table td:first-child {
+  padding-left: 4px;
+}
+
+.history-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.history-table .action-btns {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.mini-btn {
+  margin-left: 4px;
+  padding: 5px 9px;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-size: 10.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.mini-btn:hover {
+  background: var(--ink-3);
+  border-color: #3a3f47;
+}
+
+.mini-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.link-btn {
+  padding: 0;
+  color: var(--paper);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid rgba(242, 237, 227, 0.35);
+  font-size: 11.5px;
+  cursor: pointer;
+}
+
+.link-btn:hover {
+  color: var(--vermilion-soft);
+  border-color: currentColor;
+}
+
+.history-actions {
+  grid-template-columns: 1fr;
+  margin-top: 12px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+/* Scrollbar oscura coherente con el diseño */
+.history-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.history-list::-webkit-scrollbar-track {
+  background: var(--ink-0);
+  border-radius: 8px;
+}
+
+.history-list::-webkit-scrollbar-thumb {
+  background: #33383f;
+  border-radius: 8px;
+}
+
+.history-list::-webkit-scrollbar-thumb:hover {
+  background: #454b54;
+}
+
+/* Responsive: el formulario pasa a dos filas en pantallas angostas */
+@media (max-width: 720px) {
+  .modal-content.dark-modal.history-modal {
+    max-width: 100%;
+    max-height: 92vh;
+    margin: 0;
+  }
+
+  .history-summary {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .history-summary > div:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .history-form {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .history-form .save-btn {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .history-list {
+    overflow-x: auto;
+  }
+}
