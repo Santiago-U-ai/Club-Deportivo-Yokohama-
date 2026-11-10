@@ -32,7 +32,8 @@ const cspPlugin = (connect) => ({
       "object-src 'none'",
       "base-uri 'self'",
       "form-action 'self'",
-      "frame-ancestors 'none'",
+      // `frame-ancestors` se ignora en un <meta>; el anti-clickjacking se
+      // aplica con la cabecera X-Frame-Options: DENY de vercel.json.
       "upgrade-insecure-requests",
     ].join('; ')
 
