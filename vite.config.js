@@ -24,9 +24,10 @@ const cspPlugin = (connect) => ({
     const csp = [
       "default-src 'self'",
       "script-src 'self'",
-      "style-src 'self' 'unsafe-inline'",
+      // Barlow / Barlow Condensed se cargan desde Google Fonts (App.css).
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "img-src 'self' data: blob:",
-      "font-src 'self' data:",
+      "font-src 'self' data: https://fonts.gstatic.com",
       `connect-src ${connect}`,
       "object-src 'none'",
       "base-uri 'self'",
