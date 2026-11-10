@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../context/auth-context";
+import { apiErrorMessage } from "../services/api";
 import "./Login.css";
 
 const initialForm = { email: "", password: "" };
@@ -24,7 +25,7 @@ export default function Login() {
     try {
       await login(form.email.trim(), form.password);
     } catch (submitError) {
-      setError(submitError.message);
+      setError(apiErrorMessage(submitError));
     } finally {
       setSubmitting(false);
     }

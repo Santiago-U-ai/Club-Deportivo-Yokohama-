@@ -1,7 +1,55 @@
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 
+/**
+ * Orígenes permitidos en `connect-src`. Si la API se sirve en el mismo
+ * dominio (ruta relativa como `/api`) basta con 'self'.
+ */
+const connectSources = (env) => {
+  const raw = String(env.VITE_API_URL || '').trim()
+
+  if (!raw || raw.startsWith('/')) return "'self'"
+
+  try {
+    return `'self' ${new URL(raw).origin}`
+  } catch {
+    return "'self'"
+  }
+}
+
+const cspPlugin = (connect) => ({
+  name: 'yokohama-csp',
+  apply: 'build',
+  transformIndexHtml(html) {
+    const csp = [
+      "default-src 'self'",
+      "script-src 'self'",
+      "style-src 'self' 'unsafe-inline'",
+      "img-src 'self' data: blob:",
+      "font-src 'self' data:",
+      `connect-src ${connect}`,
+      "object-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "frame-ancestors 'none'",
+      "upgrade-insecure-requests",
+    ].join('; ')
+
+    return html.replace(
+      '<head>',
+      `<head>\n    <meta http-equiv="Content-Security-Policy" content="${csp}" />`,
+    )
+  },
+})
+
 // https://vite.dev/config/
-export default defineConfig({
-  plugins: [react()],
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, '.', '')
+
+  return {
+    plugins: [react(), cspPlugin(connectSources(env))],
+    build: {
+      sourcemap: false,
+    },
+  }
 })

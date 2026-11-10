@@ -1,27 +1,125 @@
 import axios from "axios";
-import { supabase } from "./supabase";
 
-const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
+const API_BASE =
+  import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+
+const raw = axios.create({
+  baseURL: API_BASE,
   timeout: 20000,
+  withCredentials: true,
 });
 
-// Agrega el token de la sesión de Supabase a cada request.
-API.interceptors.request.use(async (config) => {
-  try {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
+const API = axios.create({
+  baseURL: API_BASE,
+  timeout: 20000,
+  // Envía y recibe las cookies httpOnly de sesión y el token CSRF.
+  withCredentials: true,
+});
 
-    if (session?.access_token) {
-      config.headers.Authorization = `Bearer ${session.access_token}`;
-    }
+const SAFE_METHODS = new Set(["get", "head", "options"]);
+
+// El token CSRF vive en memoria: el access token nunca toca JavaScript.
+let csrfToken = null;
+let csrfRequest = null;
+
+const fetchCsrf = async (force = false) => {
+  if (csrfToken && !force) return csrfToken;
+
+  if (!csrfRequest) {
+    csrfRequest = raw
+      .get("/auth/csrf")
+      .then((response) => {
+        csrfToken = response.data?.csrfToken ?? null;
+        return csrfToken;
+      })
+      .finally(() => {
+        csrfRequest = null;
+      });
+  }
+
+  return csrfRequest;
+};
+
+const refreshSession = async (retry = true) => {
+  const token = await fetchCsrf();
+
+  try {
+    return await raw.post("/auth/refresh", null, {
+      headers: { "X-CSRF-Token": token },
+    });
   } catch (error) {
-    console.warn("No se pudo obtener la sesión para la API:", error);
+    // La cookie CSRF pudo expirar: se pide una nueva y se reintenta una vez.
+    if (retry && error?.response?.status === 403) {
+      csrfToken = null;
+      return refreshSession(false);
+    }
+    throw error;
+  }
+};
+
+const isAuthMutation = (url = "") =>
+  /\/auth\/(login|signup|refresh|logout)\b/.test(url);
+
+API.interceptors.request.use(async (config) => {
+  const method = (config.method || "get").toLowerCase();
+
+  if (!SAFE_METHODS.has(method)) {
+    const token = await fetchCsrf();
+    config.headers = config.headers || {};
+    config.headers["X-CSRF-Token"] = token;
   }
 
   return config;
 });
+
+let refreshPromise = null;
+
+API.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const { response, config } = error;
+
+    if (!response || !config) throw error;
+
+    const url = config.url || "";
+
+    // Token CSRF vencido o cookie perdida: se renueva y se repite la petición.
+    const csrfError = /Solicitud no válida/i.test(response.data?.error || "");
+
+    if (response.status === 403 && csrfError && !config._csrfRetry) {
+      config._csrfRetry = true;
+      csrfToken = null;
+      await fetchCsrf(true);
+      return API(config);
+    }
+
+    // Access token vencido: se renueva con el refresh token httpOnly.
+    if (
+      response.status === 401 &&
+      !config._retry &&
+      !isAuthMutation(url)
+    ) {
+      config._retry = true;
+
+      try {
+        if (!refreshPromise) {
+          refreshPromise = refreshSession().finally(() => {
+            refreshPromise = null;
+          });
+        }
+        await refreshPromise;
+        return API(config);
+      } catch {
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new Event("yh:session-expired"));
+        }
+        throw error;
+      }
+    }
+
+    throw error;
+  },
+);
 
 /**
  * Extrae un mensaje legible de un error de axios o de red.
@@ -31,12 +129,17 @@ export const apiErrorMessage = (error) => {
   if (error?.code === "ERR_NETWORK") {
     return "No se pudo conectar con el servidor. ¿Está corriendo el backend?";
   }
+  if (error?.response?.status === 401) return "Sesión expirada";
   return error?.message || "Ocurrió un error inesperado";
 };
 
 export const authApi = {
+  csrf: () => fetchCsrf(true),
+  login: (email, password) =>
+    API.post("/auth/login", { email, password }).then((res) => res.data),
   me: () => API.get("/auth/me").then((res) => res.data),
   verify: () => API.get("/auth/verify").then((res) => res.data),
+  refresh: () => refreshSession().then((res) => res.data),
   logout: () => API.post("/auth/logout").then((res) => res.data),
 };
 
