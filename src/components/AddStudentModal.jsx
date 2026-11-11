@@ -1,13 +1,14 @@
 import { useState } from "react";
 import "./AddStudentModal.css";
-import { BELTS, GROUPS } from "../utils/adapters";
+import { BELTS, GROUPS, todayISO } from "../utils/adapters";
 import { IconClose } from "./Icons";
 
 const initialForm = {
   name: "",
   correo: "",
   phone: "",
-  age: "",
+  birthDate: "",
+  startDate: "",
   belt: "BLANCO",
   isActive: true,
 };
@@ -35,7 +36,8 @@ export default function AddStudentModal({ isOpen, onClose, onAdd, activeTab }) {
         name: formData.name,
         correo: formData.correo,
         phone: formData.phone,
-        age: formData.age,
+        birthDate: formData.birthDate,
+        startDate: formData.startDate,
         belt: formData.belt,
         group: selectedGroup || undefined,
         isActive: formData.isActive,
@@ -94,26 +96,37 @@ export default function AddStudentModal({ isOpen, onClose, onAdd, activeTab }) {
 
           <div className="form-row">
             <div className="form-group">
-              <label>Edad</label>
+              <label>Fecha de nacimiento</label>
               <input
-                type="number"
-                min="0"
-                max="120"
+                type="date"
+                min="1900-01-01"
+                max={todayISO()}
                 required
-                value={formData.age}
-                onChange={(event) => update("age", event.target.value)}
+                value={formData.birthDate}
+                onChange={(event) => update("birthDate", event.target.value)}
               />
             </div>
             <div className="form-group">
-              <label>Teléfono</label>
+              <label>Inicio en karate</label>
               <input
-                type="text"
-                placeholder="300 000 0000"
-                required
-                value={formData.phone}
-                onChange={(event) => update("phone", event.target.value)}
+                type="date"
+                min="1900-01-01"
+                max={todayISO()}
+                value={formData.startDate}
+                onChange={(event) => update("startDate", event.target.value)}
               />
             </div>
+          </div>
+
+          <div className="form-group">
+            <label>Teléfono</label>
+            <input
+              type="text"
+              placeholder="300 000 0000"
+              required
+              value={formData.phone}
+              onChange={(event) => update("phone", event.target.value)}
+            />
           </div>
 
           <div className="form-group">

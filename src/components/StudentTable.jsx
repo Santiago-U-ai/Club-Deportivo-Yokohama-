@@ -20,8 +20,15 @@ const deudaLabel = (student) => {
 
 const metaLine = (student) => {
   const parts = [];
-  if (student.age) parts.push(`${student.age} años`);
+
+  if (student.age !== null && student.age !== undefined) {
+    parts.push(`${student.age} ${student.age === 1 ? "año" : "años"}`);
+  }
+  if (student.karateTime) {
+    parts.push(`${student.karateTime} en karate`);
+  }
   if (student.phone) parts.push(student.phone);
+
   if (parts.length === 0) parts.push(student.correo || "Sin contacto");
   return parts.join(" · ");
 };
