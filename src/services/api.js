@@ -3,15 +3,19 @@ import axios from "axios";
 const API_BASE =
   import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
+// Render (plan gratuito) puede tardar ~40 s en despertar tras estar inactivo,
+// por eso el margen es amplio.
+const TIMEOUT_MS = 60000;
+
 const raw = axios.create({
   baseURL: API_BASE,
-  timeout: 20000,
+  timeout: TIMEOUT_MS,
   withCredentials: true,
 });
 
 const API = axios.create({
   baseURL: API_BASE,
-  timeout: 20000,
+  timeout: TIMEOUT_MS,
   // Envía y recibe las cookies httpOnly de sesión y el token CSRF.
   withCredentials: true,
 });
@@ -126,10 +130,23 @@ API.interceptors.response.use(
  */
 export const apiErrorMessage = (error) => {
   if (error?.response?.data?.error) return error.response.data.error;
-  if (error?.code === "ERR_NETWORK") {
-    return "No se pudo conectar con el servidor. ¿Está corriendo el backend?";
+
+  const status = error?.response?.status;
+
+  if (status === 502 || status === 503 || status === 504) {
+    return "El servidor no respondió a tiempo. Inténtalo de nuevo en unos segundos.";
   }
-  if (error?.response?.status === 401) return "Sesión expirada";
+
+  if (error?.code === "ECONNABORTED" || /timeout/i.test(error?.message || "")) {
+    return "El servidor tardó demasiado en responder. Puede estar despertando; espera unos segundos e inténtalo de nuevo.";
+  }
+
+  if (error?.code === "ERR_NETWORK") {
+    return "No se pudo conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.";
+  }
+
+  if (status === 401) return "Sesión expirada";
+
   return error?.message || "Ocurrió un error inesperado";
 };
 
