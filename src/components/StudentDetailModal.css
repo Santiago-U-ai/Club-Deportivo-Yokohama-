@@ -1,0 +1,213 @@
+.modal-content.detail-modal {
+  max-width: 520px;
+}
+
+/* ------------------------------------------------------------
+   Cabecera: avatar + nombre + etiquetas
+   ------------------------------------------------------------ */
+.detail-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.detail-header .modal-header {
+  margin-bottom: 0;
+  padding-right: 30px;
+}
+
+.detail-modal .detail-avatar {
+  flex: 0 0 54px;
+  width: 54px;
+  height: 54px;
+  font-size: 18px;
+}
+
+.detail-identity {
+  min-width: 0;
+}
+
+.detail-identity h2 {
+  overflow-wrap: anywhere;
+}
+
+.detail-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.detail-chip {
+  display: inline-block;
+  padding: 4px 9px;
+  color: #e28a7f;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: rgba(226, 59, 46, 0.1);
+  border: 1px solid rgba(226, 59, 46, 0.28);
+  border-radius: 999px;
+}
+
+/* ------------------------------------------------------------
+   Secciones y datos
+   ------------------------------------------------------------ */
+.detail-section {
+  padding-top: 16px;
+  margin-top: 16px;
+  border-top: 1px solid var(--line-soft);
+}
+
+.detail-section:first-of-type {
+  padding-top: 0;
+  margin-top: 0;
+  border-top: 0;
+}
+
+.detail-section h3 {
+  margin: 0 0 10px;
+  color: var(--paper-faint);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.detail-section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.detail-section-head h3 {
+  margin: 0;
+}
+
+.detail-link {
+  padding: 0;
+  color: var(--paper-dim);
+  font-size: 11px;
+  font-weight: 600;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.detail-link:hover {
+  color: var(--vermilion-soft);
+  border-bottom-color: currentColor;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 18px;
+  margin: 0;
+}
+
+.detail-grid > div {
+  min-width: 0;
+}
+
+.detail-wide {
+  grid-column: 1 / -1;
+}
+
+.detail-grid dt {
+  color: var(--paper-faint);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.detail-grid dd {
+  margin: 4px 0 0;
+  color: var(--paper);
+  font-size: 13.5px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+/* ------------------------------------------------------------
+   Mensualidad
+   ------------------------------------------------------------ */
+.detail-payment {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 14px;
+  background: var(--ink-0);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+}
+
+.detail-amount {
+  margin: 0;
+  color: var(--paper);
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.detail-amount-label {
+  margin: 4px 0 0;
+  color: var(--paper-faint);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.detail-payment-meta {
+  text-align: right;
+}
+
+.detail-payment-meta p {
+  margin: 0;
+  color: var(--paper-dim);
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+
+.detail-payment-meta p + p {
+  margin-top: 2px;
+  color: var(--paper-faint);
+}
+
+@media (max-width: 520px) {
+  .detail-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .detail-modal .detail-avatar {
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
+    font-size: 15px;
+  }
+
+  .detail-payment {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .detail-payment-meta {
+    text-align: left;
+  }
+}

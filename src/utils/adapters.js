@@ -165,6 +165,22 @@ export const toAlumnoPayload = (form, { partial = false } = {}) => ({
 });
 
 /**
+ * Fecha legible corta ("12 abr 2019") o "—" si no hay dato.
+ */
+export const formatShortDate = (value) => {
+  if (!value) return "—";
+
+  const date = new Date(`${value}T00:00:00`);
+  if (Number.isNaN(date.getTime())) return "—";
+
+  return date.toLocaleDateString("es-CO", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+};
+
+/**
  * Fecha legible para la tabla ("04 Nov 2026" o "Sin pagos").
  */
 export const formatDate = (value) => {

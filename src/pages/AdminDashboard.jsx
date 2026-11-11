@@ -15,6 +15,7 @@ import StudentTable from "../components/StudentTable";
 import AddStudentModal from "../components/AddStudentModal";
 import EditStudentModal from "../components/EditStudentModal";
 import StudentHistoryModal from "../components/StudentHistoryModal";
+import StudentDetailModal from "../components/StudentDetailModal";
 import { IconPlus } from "../components/Icons";
 
 export default function AdminDashboard() {
@@ -39,6 +40,7 @@ export default function AdminDashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingStudent, setEditingStudent] = useState(null);
   const [historyStudent, setHistoryStudent] = useState(null);
+  const [viewingStudent, setViewingStudent] = useState(null);
   const [busyId, setBusyId] = useState(null);
   const [actionError, setActionError] = useState("");
 
@@ -204,6 +206,7 @@ export default function AdminDashboard() {
               onDelete={handleDelete}
               onEdit={setEditingStudent}
               onHistory={setHistoryStudent}
+              onView={setViewingStudent}
               onToggleMensualidad={handleToggleMensualidad}
               busyId={busyId}
             />
@@ -232,6 +235,21 @@ export default function AdminDashboard() {
           onClose={() => setHistoryStudent(null)}
           onSave={saveMensualidad}
           onDeletePago={deletePago}
+        />
+      )}
+
+      {viewingStudent && (
+        <StudentDetailModal
+          student={viewingStudent}
+          onClose={() => setViewingStudent(null)}
+          onEdit={(student) => {
+            setViewingStudent(null);
+            setEditingStudent(student);
+          }}
+          onHistory={(student) => {
+            setViewingStudent(null);
+            setHistoryStudent(student);
+          }}
         />
       )}
     </div>

@@ -3,6 +3,7 @@ import { formatDate, monthLabel } from "../utils/adapters";
 import {
   IconCheck,
   IconEdit,
+  IconEye,
   IconHistory,
   IconTrash,
   IconUndo,
@@ -38,6 +39,7 @@ export default function StudentTable({
   onDelete,
   onEdit,
   onHistory,
+  onView,
   onToggleMensualidad,
   busyId,
 }) {
@@ -69,13 +71,19 @@ export default function StudentTable({
           {students.map((student) => (
             <tr key={student.id}>
               <td>
-                <div className="student-info">
-                  <div className="avatar">{student.initials}</div>
-                  <div className="student-data">
-                    <p className="student-name">{student.name}</p>
-                    <p className="student-phone">{metaLine(student)}</p>
-                  </div>
-                </div>
+                <button
+                  type="button"
+                  className="student-info student-info-btn"
+                  onClick={() => onView(student)}
+                  title="Ver ficha del alumno"
+                  aria-label={`Ver ficha de ${student.name}`}
+                >
+                  <span className="avatar">{student.initials}</span>
+                  <span className="student-data">
+                    <span className="student-name">{student.name}</span>
+                    <span className="student-phone">{metaLine(student)}</span>
+                  </span>
+                </button>
               </td>
               <td data-label="Grupo">
                 {student.group === "SIN GRUPO" ? (
@@ -115,6 +123,16 @@ export default function StudentTable({
                 )}
               </td>
               <td className="action-btns">
+                <button
+                  type="button"
+                  className="icon-btn"
+                  onClick={() => onView(student)}
+                  disabled={busyId === student.id}
+                  title="Ver ficha del alumno"
+                  aria-label={`Ver ficha de ${student.name}`}
+                >
+                  <IconEye size={16} />
+                </button>
                 <button
                   type="button"
                   className="icon-btn"
