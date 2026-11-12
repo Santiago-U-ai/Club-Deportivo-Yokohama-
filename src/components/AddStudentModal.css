@@ -101,6 +101,13 @@
   text-transform: uppercase;
 }
 
+.form-hint {
+  margin: 6px 0 0;
+  color: var(--paper-faint);
+  font-size: 10.5px;
+  line-height: 1.35;
+}
+
 .form-group input,
 .form-group select {
   width: 100%;

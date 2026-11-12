@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./AddStudentModal.css";
-import { BELTS, GROUPS, todayISO } from "../utils/adapters";
+import { BELTS, GROUPS, SEDES, sedeLabel, todayISO } from "../utils/adapters";
 import { IconClose } from "./Icons";
 
 export default function EditStudentModal({ student, onClose, onSave }) {
@@ -13,6 +13,7 @@ export default function EditStudentModal({ student, onClose, onSave }) {
     direccion: student.direccion,
     belt: student.belt,
     group: student.group === "SIN GRUPO" ? "" : student.group,
+    sede: student.sede ?? SEDES[0],
     isActive: student.activo,
   });
   const [error, setError] = useState("");
@@ -110,6 +111,22 @@ export default function EditStudentModal({ student, onClose, onSave }) {
 
           <div className="form-row">
             <div className="form-group">
+              <label>Sede</label>
+              <select
+                value={formData.sede}
+                onChange={(event) => update("sede", event.target.value)}
+              >
+                {SEDES.map((sede) => (
+                  <option key={sede} value={sede}>
+                    {sedeLabel(sede)}
+                  </option>
+                ))}
+              </select>
+              <p className="form-hint">
+                Si cambias la sede, el alumno pasa al listado de esa sede.
+              </p>
+            </div>
+            <div className="form-group">
               <label>Grupo</label>
               <select
                 value={formData.group}
@@ -123,15 +140,16 @@ export default function EditStudentModal({ student, onClose, onSave }) {
                 ))}
               </select>
             </div>
-            <div className="form-group">
-              <label>Dirección</label>
-              <input
-                type="text"
-                placeholder="Calle 1 # 2-3"
-                value={formData.direccion}
-                onChange={(event) => update("direccion", event.target.value)}
-              />
-            </div>
+          </div>
+
+          <div className="form-group">
+            <label>Dirección</label>
+            <input
+              type="text"
+              placeholder="Calle 1 # 2-3"
+              value={formData.direccion}
+              onChange={(event) => update("direccion", event.target.value)}
+            />
           </div>
 
           <div className="form-group">

@@ -1,6 +1,6 @@
 import "./AddStudentModal.css";
 import "./StudentDetailModal.css";
-import { formatShortDate, monthLabel } from "../utils/adapters";
+import { formatShortDate, monthLabel, sedeLabel } from "../utils/adapters";
 import { IconClose } from "./Icons";
 
 const money = (value) => `$${Number(value ?? 0).toLocaleString("es-CO")}`;
@@ -49,7 +49,9 @@ export default function StudentDetailModal({
           <div className="avatar detail-avatar">{student.initials || "?"}</div>
 
           <div className="modal-header detail-identity">
-            <p className="modal-eyebrow">Ficha del alumno</p>
+            <p className="modal-eyebrow">
+              Ficha del alumno · Sede {sedeLabel(student.sede)}
+            </p>
             <h2 id="detail-title">{student.name}</h2>
 
             <div className="detail-tags">

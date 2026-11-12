@@ -1,7 +1,7 @@
 const money = (value) =>
   `$${Number(value ?? 0).toLocaleString("es-CO")}`;
 
-export default function StatsBar({ stats, deudaTotal = 0 }) {
+export default function StatsBar({ stats, deudaTotal = 0, sedeLabel }) {
   const items = [
     { id: "total", label: "Alumnos", value: stats.total, tone: "neutral" },
     { id: "al-dia", label: "Al día", value: stats.alDia, tone: "ok" },
@@ -10,7 +10,10 @@ export default function StatsBar({ stats, deudaTotal = 0 }) {
   ];
 
   return (
-    <section className="stats-bar" aria-label="Resumen del club">
+    <section
+      className="stats-bar"
+      aria-label={sedeLabel ? `Resumen de la sede ${sedeLabel}` : "Resumen del club"}
+    >
       {items.map((item) => (
         <div key={item.id} className={`stat stat-${item.tone}`}>
           <span className="stat-label">{item.label}</span>

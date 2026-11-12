@@ -11,6 +11,16 @@ export const BELTS = [
 
 export const GROUPS = ["BABY", "JUVENIL", "SENIOR"];
 
+/**
+ * Sedes del club. Cada alumno pertenece a una y sus grupos se cuentan
+ * por sede.
+ */
+export const SEDES = ["NORTE", "SUR"];
+
+export const SEDE_LABELS = { NORTE: "Norte", SUR: "Sur" };
+
+export const sedeLabel = (sede) => SEDE_LABELS[sede] ?? SEDE_LABELS.NORTE;
+
 export const beltColorFor = (belt) =>
   BELTS.find((item) => item.id === belt)?.color ?? "#848795";
 
@@ -130,6 +140,7 @@ export const toStudent = (alumno) => {
     age: ageFromBirthDate(alumno.fecha_nacimiento),
     karateTime: elapsedLabel(alumno.fecha_inicio),
     direccion: alumno.direccion ?? "",
+    sede: alumno.sede ?? "NORTE",
     belt: alumno.cinturon ?? "BLANCO",
     beltColor: beltColorFor(alumno.cinturon),
     group: alumno.grupo ?? "SIN GRUPO",
@@ -159,6 +170,7 @@ export const toAlumnoPayload = (form, { partial = false } = {}) => ({
   fecha_nacimiento: form.birthDate || (partial ? null : undefined),
   fecha_inicio: form.startDate || (partial ? null : undefined),
   direccion: form.direccion?.trim() || (partial ? null : undefined),
+  sede: form.sede || undefined,
   cinturon: form.belt || undefined,
   grupo: form.group || (partial ? null : undefined),
   activo: form.isActive !== false,

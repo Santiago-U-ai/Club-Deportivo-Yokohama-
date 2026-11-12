@@ -1,10 +1,12 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "../context/auth-context";
 import { useStudents } from "../hooks/useStudents";
 import { apiErrorMessage } from "../services/api";
 import {
   currentMonth,
   monthLabel,
+  SEDES,
+  sedeLabel,
   toAlumnoPayload,
 } from "../utils/adapters";
 
@@ -17,6 +19,18 @@ import EditStudentModal from "../components/EditStudentModal";
 import StudentHistoryModal from "../components/StudentHistoryModal";
 import StudentDetailModal from "../components/StudentDetailModal";
 import { IconPlus } from "../components/Icons";
+
+// La sede elegida se recuerda entre visitas.
+const SEDE_STORAGE_KEY = "yh_sede";
+
+const readStoredSede = () => {
+  try {
+    const stored = window.localStorage.getItem(SEDE_STORAGE_KEY);
+    return SEDES.includes(stored) ? stored : SEDES[0];
+  } catch {
+    return SEDES[0];
+  }
+};
 
 export default function AdminDashboard() {
   const { user, logout } = useAuth();
@@ -31,9 +45,9 @@ export default function AdminDashboard() {
     setMensualidad,
     saveMensualidad,
     deletePago,
-    stats,
   } = useStudents();
 
+  const [activeSede, setActiveSede] = useState(readStoredSede);
   const [activeTab, setActiveTab] = useState("TODOS");
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("Todos");
@@ -44,24 +58,59 @@ export default function AdminDashboard() {
   const [busyId, setBusyId] = useState(null);
   const [actionError, setActionError] = useState("");
 
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(SEDE_STORAGE_KEY, activeSede);
+    } catch {
+      // Sin persistencia: la sede vuelve a la primera al recargar.
+    }
+  }, [activeSede]);
+
+  // Alumnos y grupos de la sede activa.
+  const sedeStudents = useMemo(
+    () => students.filter((student) => student.sede === activeSede),
+    [students, activeSede],
+  );
+
+  const sedeCounts = useMemo(
+    () =>
+      students.reduce(
+        (acc, student) => {
+          acc[student.sede] = (acc[student.sede] ?? 0) + 1;
+          return acc;
+        },
+        { NORTE: 0, SUR: 0 },
+      ),
+    [students],
+  );
+
   const counts = useMemo(() => {
-    return students.reduce((acc, student) => {
+    return sedeStudents.reduce((acc, student) => {
       acc[student.group] = (acc[student.group] ?? 0) + 1;
       return acc;
     }, {});
-  }, [students]);
+  }, [sedeStudents]);
+
+  const sedeStats = useMemo(
+    () => ({
+      total: sedeStudents.length,
+      alDia: sedeStudents.filter((student) => student.alDia).length,
+      pendientes: sedeStudents.filter((student) => !student.alDia).length,
+    }),
+    [sedeStudents],
+  );
 
   const deudaTotal = useMemo(
-    () => students.reduce((sum, student) => sum + student.deudaTotal, 0),
-    [students],
+    () => sedeStudents.reduce((sum, student) => sum + student.deudaTotal, 0),
+    [sedeStudents],
   );
 
   const groupStudents = useMemo(
     () =>
       activeTab === "TODOS"
-        ? students
-        : students.filter((student) => student.group === activeTab),
-    [students, activeTab],
+        ? sedeStudents
+        : sedeStudents.filter((student) => student.group === activeTab),
+    [sedeStudents, activeTab],
   );
 
   const displayStudents = useMemo(() => {
@@ -85,14 +134,32 @@ export default function AdminDashboard() {
 
   const scopeLabel =
     activeTab === "TODOS"
-      ? "en el club"
+      ? "en la"
       : activeTab === "SIN GRUPO"
-        ? "sin grupo asignado"
-        : `en el grupo ${activeTab}`;
+        ? "sin grupo en la"
+        : `del grupo ${activeTab} en la`;
 
   const handleAdd = async (form) => {
     setActionError("");
     await addStudent(toAlumnoPayload(form));
+  };
+
+  /**
+   * Cambia de sede. Si el grupo activo no existe en la sede destino,
+   * se vuelve a «Todos» para no dejar el listado vacío.
+   */
+  const handleSedeChange = (sede) => {
+    if (sede === activeSede) return;
+
+    setActiveSede(sede);
+
+    const tabExists =
+      activeTab === "TODOS" ||
+      students.some(
+        (student) => student.sede === sede && student.group === activeTab,
+      );
+
+    if (!tabExists) setActiveTab("TODOS");
   };
 
   const handleEdit = async (studentId, form) => {
@@ -143,10 +210,13 @@ export default function AdminDashboard() {
   return (
     <div className="dashboard-shell">
       <Sidebar
+        activeSede={activeSede}
+        setActiveSede={handleSedeChange}
+        sedeCounts={sedeCounts}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         counts={counts}
-        total={stats.total}
+        total={sedeStats.total}
         userEmail={user?.email}
         onLogout={logout}
       />
@@ -157,12 +227,15 @@ export default function AdminDashboard() {
             <p className="eyebrow">
               Panel administrativo
               <span className="eyebrow-sep" aria-hidden="true" />
+              Sede {sedeLabel(activeSede)}
+              <span className="eyebrow-sep" aria-hidden="true" />
               {monthLabel(currentMonth())}
             </p>
             <h1>{pageTitle}</h1>
             <p className="page-subtitle">
               {groupStudents.length}{" "}
-              {groupStudents.length === 1 ? "alumno" : "alumnos"} {scopeLabel}
+              {groupStudents.length === 1 ? "alumno" : "alumnos"} {scopeLabel}{" "}
+              sede {sedeLabel(activeSede)}
             </p>
           </div>
 
@@ -176,7 +249,11 @@ export default function AdminDashboard() {
           </button>
         </header>
 
-        <StatsBar stats={stats} deudaTotal={deudaTotal} />
+        <StatsBar
+          stats={sedeStats}
+          deudaTotal={deudaTotal}
+          sedeLabel={sedeLabel(activeSede)}
+        />
 
         <section className="panel" aria-label="Listado de alumnos">
           <ActionToolbar
@@ -219,6 +296,7 @@ export default function AdminDashboard() {
         onClose={() => setIsModalOpen(false)}
         onAdd={handleAdd}
         activeTab={activeTab}
+        activeSede={activeSede}
       />
 
       {editingStudent && (

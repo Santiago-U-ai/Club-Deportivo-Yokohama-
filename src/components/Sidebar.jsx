@@ -1,3 +1,4 @@
+import { SEDES, sedeLabel } from "../utils/adapters";
 import { IconLogOut, IconUsers } from "./Icons";
 
 const GROUPS = [
@@ -9,6 +10,9 @@ const GROUPS = [
 ];
 
 export default function Sidebar({
+  activeSede,
+  setActiveSede,
+  sedeCounts = {},
   activeTab,
   setActiveTab,
   counts = {},
@@ -31,7 +35,34 @@ export default function Sidebar({
         <p className="brand-caption">Sistema de gestión</p>
       </div>
 
-      <nav className="side-nav" aria-label="Grupos de alumnos">
+      <div className="side-sede">
+        <p className="side-nav-title">Sede</p>
+
+        <div className="sede-switch" role="group" aria-label="Cambiar de sede">
+          {SEDES.map((sede) => {
+            const isActive = activeSede === sede;
+
+            return (
+              <button
+                key={sede}
+                type="button"
+                className={`sede-btn ${isActive ? "active" : ""}`}
+                onClick={() => setActiveSede(sede)}
+                aria-pressed={isActive}
+                title={`Ver la sede ${sedeLabel(sede)}`}
+              >
+                <span className="sede-name">{sedeLabel(sede)}</span>
+                <span className="sede-count">{sedeCounts[sede] ?? 0}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <nav
+        className="side-nav"
+        aria-label={`Grupos de la sede ${sedeLabel(activeSede)}`}
+      >
         <p className="side-nav-title">Grupos</p>
 
         {visibleGroups.map((group) => {

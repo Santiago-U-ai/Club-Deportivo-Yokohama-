@@ -144,6 +144,74 @@ select:focus-visible {
   text-transform: uppercase;
 }
 
+/* -------------------------------------------------------------- Sede */
+
+.side-sede {
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.sede-switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  padding: 0 4px;
+}
+
+.sede-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 8px 10px;
+  color: var(--paper-dim);
+  background: var(--ink-2);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.sede-btn:hover {
+  color: var(--paper);
+  border-color: #3a4048;
+}
+
+.sede-btn.active {
+  color: var(--paper);
+  background: rgba(226, 59, 46, 0.12);
+  border-color: rgba(226, 59, 46, 0.35);
+}
+
+.sede-name {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.sede-count {
+  display: grid;
+  place-items: center;
+  min-width: 20px;
+  height: 18px;
+  padding: 0 6px;
+  color: var(--paper-dim);
+  background: var(--ink-3);
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.sede-btn.active .sede-count {
+  color: #ffd9d3;
+  background: rgba(226, 59, 46, 0.22);
+}
+
 .side-nav {
   display: flex;
   flex-direction: column;
@@ -946,8 +1014,24 @@ select:focus-visible {
     display: none;
   }
 
+  .side-sede {
+    order: 2;
+    flex: 0 0 auto;
+    padding: 0;
+    border: 0;
+  }
+
+  .sede-switch {
+    padding: 0;
+    gap: 4px;
+  }
+
+  .sede-btn {
+    padding: 7px 9px;
+  }
+
   .side-nav {
-    order: 3;
+    order: 4;
     flex: 1 0 100%;
     flex-direction: row;
     gap: 4px;
@@ -976,7 +1060,7 @@ select:focus-visible {
   }
 
   .sidebar-footer {
-    order: 2;
+    order: 3;
     flex: 0 0 auto;
     margin: 0 0 0 auto;
     padding: 0;

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./AddStudentModal.css";
-import { BELTS, GROUPS, todayISO } from "../utils/adapters";
+import { BELTS, GROUPS, SEDES, sedeLabel, todayISO } from "../utils/adapters";
 import { IconClose } from "./Icons";
 
 const initialForm = {
@@ -13,7 +13,13 @@ const initialForm = {
   isActive: true,
 };
 
-export default function AddStudentModal({ isOpen, onClose, onAdd, activeTab }) {
+export default function AddStudentModal({
+  isOpen,
+  onClose,
+  onAdd,
+  activeTab,
+  activeSede,
+}) {
   const [formData, setFormData] = useState(initialForm);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
@@ -25,6 +31,9 @@ export default function AddStudentModal({ isOpen, onClose, onAdd, activeTab }) {
 
   const selectedGroup =
     formData.group ?? (GROUPS.includes(activeTab) ? activeTab : "");
+
+  // La sede del alta sigue a la sede activa hasta que se elige otra.
+  const selectedSede = formData.sede ?? activeSede ?? SEDES[0];
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -40,6 +49,7 @@ export default function AddStudentModal({ isOpen, onClose, onAdd, activeTab }) {
         startDate: formData.startDate,
         belt: formData.belt,
         group: selectedGroup || undefined,
+        sede: selectedSede,
         isActive: formData.isActive,
       });
 
@@ -68,6 +78,7 @@ export default function AddStudentModal({ isOpen, onClose, onAdd, activeTab }) {
           <p className="modal-eyebrow">Alta de alumno</p>
           <h2>Nuevo alumno</h2>
           <p className="subtitle">
+            Sede {sedeLabel(selectedSede)} ·{" "}
             {selectedGroup ? `Grupo ${selectedGroup}` : "Sin grupo asignado"}
           </p>
         </div>
@@ -129,19 +140,34 @@ export default function AddStudentModal({ isOpen, onClose, onAdd, activeTab }) {
             />
           </div>
 
-          <div className="form-group">
-            <label>Grupo</label>
-            <select
-              value={selectedGroup}
-              onChange={(event) => update("group", event.target.value)}
-            >
-              <option value="">Sin grupo</option>
-              {GROUPS.map((group) => (
-                <option key={group} value={group}>
-                  {group}
-                </option>
-              ))}
-            </select>
+          <div className="form-row">
+            <div className="form-group">
+              <label>Sede</label>
+              <select
+                value={selectedSede}
+                onChange={(event) => update("sede", event.target.value)}
+              >
+                {SEDES.map((sede) => (
+                  <option key={sede} value={sede}>
+                    {sedeLabel(sede)}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="form-group">
+              <label>Grupo</label>
+              <select
+                value={selectedGroup}
+                onChange={(event) => update("group", event.target.value)}
+              >
+                <option value="">Sin grupo</option>
+                {GROUPS.map((group) => (
+                  <option key={group} value={group}>
+                    {group}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           <div className="form-group">
