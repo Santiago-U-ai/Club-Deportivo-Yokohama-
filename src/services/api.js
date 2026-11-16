@@ -1,7 +1,14 @@
 import axios from "axios";
 
-const API_BASE =
-  import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const FALLBACK_API_BASE = import.meta.env.PROD
+  ? "/api"
+  : "http://localhost:5000/api";
+
+// No hay archivos .env en el repositorio: en producción el navegador llama a
+// `/api` en el mismo dominio (Vercel lo reenvía, ver vercel.json) y en
+// desarrollo cae en el backend local. `VITE_API_URL` sigue funcionando como
+// override si se define en el entorno (por ejemplo, en Vercel).
+const API_BASE = import.meta.env.VITE_API_URL || FALLBACK_API_BASE;
 
 // Render (plan gratuito) puede tardar ~40 s en despertar tras estar inactivo,
 // por eso el margen es amplio.
