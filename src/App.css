@@ -120,10 +120,47 @@ select:focus-visible {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.018), transparent 26%),
     var(--ink-1);
   border-right: 1px solid var(--line);
+  /* El scroll vive en `.side-nav-scroll`, así el logo y la cuenta no se mueven. */
+  overflow: hidden;
+}
+
+/* Zona desplazable: grupos y accesos. */
+.side-nav-scroll {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 22px;
+  min-height: 0;
+  padding-right: 6px;
+  overflow-x: hidden;
   overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #3a4048 transparent;
+}
+
+.side-nav-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.side-nav-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.side-nav-scroll::-webkit-scrollbar-thumb {
+  background: #343a42;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background-clip: padding-box;
+}
+
+.side-nav-scroll::-webkit-scrollbar-thumb:hover {
+  background: #4a525c;
+  background-clip: padding-box;
 }
 
 .sidebar-brand {
+  flex: 0 0 auto;
   padding: 4px 8px 18px;
   border-bottom: 1px solid var(--line-soft);
 }
@@ -147,6 +184,7 @@ select:focus-visible {
 /* -------------------------------------------------------------- Sede */
 
 .side-sede {
+  flex: 0 0 auto;
   padding-bottom: 18px;
   border-bottom: 1px solid var(--line-soft);
 }
@@ -214,6 +252,7 @@ select:focus-visible {
 
 .side-nav {
   display: flex;
+  flex: 0 0 auto;
   flex-direction: column;
   gap: 4px;
   min-height: 0;
@@ -317,6 +356,7 @@ select:focus-visible {
 
 .sidebar-footer {
   display: flex;
+  flex: 0 0 auto;
   flex-direction: column;
   gap: 12px;
   margin-top: auto;
@@ -1082,6 +1122,11 @@ select:focus-visible {
     flex-direction: row;
     gap: 4px;
     margin: 0;
+  }
+
+  /* En móvil el sidebar es una barra: no hay zona con scroll propio. */
+  .side-nav-scroll {
+    display: contents;
   }
 
   .nav-item {

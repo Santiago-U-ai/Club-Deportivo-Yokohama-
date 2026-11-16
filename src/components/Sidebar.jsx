@@ -61,54 +61,56 @@ export default function Sidebar({
         </div>
       </div>
 
-      <nav
-        className="side-nav"
-        aria-label={`Grupos de la sede ${sedeLabel(activeSede)}`}
-      >
-        <p className="side-nav-title">Grupos</p>
-
-        {visibleGroups.map((group) => {
-          const count = group.id === "TODOS" ? total : counts[group.id] ?? 0;
-          const isActive =
-            activeSection === "ALUMNOS" && activeTab === group.id;
-
-          return (
-            <button
-              key={group.id}
-              type="button"
-              className={`nav-item ${isActive ? "active" : ""}`}
-              onClick={() => setActiveTab(group.id)}
-              aria-current={isActive ? "page" : undefined}
-            >
-              <span className="nav-item-text">
-                <span className="nav-item-label">{group.label}</span>
-                <span className="nav-item-hint">{group.hint}</span>
-              </span>
-              <span className="nav-count">{count}</span>
-            </button>
-          );
-        })}
-      </nav>
-
-      <nav className="side-nav" aria-label="Asistencias">
-        <p className="side-nav-title">Asistencia</p>
-
-        <button
-          type="button"
-          className={`nav-item ${activeSection === "ASISTENCIAS" ? "active" : ""}`}
-          onClick={() => setActiveSection("ASISTENCIAS")}
-          aria-current={activeSection === "ASISTENCIAS" ? "page" : undefined}
-          title="Listas de asistencia guardadas"
+      <div className="side-nav-scroll">
+        <nav
+          className="side-nav"
+          aria-label={`Grupos de la sede ${sedeLabel(activeSede)}`}
         >
-          <span className="nav-item-text">
-            <span className="nav-item-label">Listas guardadas</span>
-            <span className="nav-item-hint">Clases por día</span>
-          </span>
-          <span className="nav-item-icon">
-            <IconClipboardCheck size={15} />
-          </span>
-        </button>
-      </nav>
+          <p className="side-nav-title">Grupos</p>
+
+          {visibleGroups.map((group) => {
+            const count = group.id === "TODOS" ? total : counts[group.id] ?? 0;
+            const isActive =
+              activeSection === "ALUMNOS" && activeTab === group.id;
+
+            return (
+              <button
+                key={group.id}
+                type="button"
+                className={`nav-item ${isActive ? "active" : ""}`}
+                onClick={() => setActiveTab(group.id)}
+                aria-current={isActive ? "page" : undefined}
+              >
+                <span className="nav-item-text">
+                  <span className="nav-item-label">{group.label}</span>
+                  <span className="nav-item-hint">{group.hint}</span>
+                </span>
+                <span className="nav-count">{count}</span>
+              </button>
+            );
+          })}
+        </nav>
+
+        <nav className="side-nav" aria-label="Asistencias">
+          <p className="side-nav-title">Asistencia</p>
+
+          <button
+            type="button"
+            className={`nav-item ${activeSection === "ASISTENCIAS" ? "active" : ""}`}
+            onClick={() => setActiveSection("ASISTENCIAS")}
+            aria-current={activeSection === "ASISTENCIAS" ? "page" : undefined}
+            title="Listas de asistencia guardadas"
+          >
+            <span className="nav-item-text">
+              <span className="nav-item-label">Listas guardadas</span>
+              <span className="nav-item-hint">Clases por día</span>
+            </span>
+            <span className="nav-item-icon">
+              <IconClipboardCheck size={15} />
+            </span>
+          </button>
+        </nav>
+      </div>
 
       <div className="sidebar-footer">
         <div className="side-user">
