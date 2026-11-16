@@ -294,6 +294,22 @@ select:focus-visible {
   font-variant-numeric: tabular-nums;
 }
 
+.nav-item-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  color: var(--paper-faint);
+  transition: color 0.15s ease;
+}
+
+.nav-item:hover .nav-item-icon {
+  color: var(--paper-dim);
+}
+
+.nav-item.active .nav-item-icon {
+  color: var(--vermilion-soft);
+}
+
 .nav-item.active .nav-count {
   color: #ffd9d3;
   background: rgba(226, 59, 46, 0.2);

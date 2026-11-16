@@ -20,6 +20,7 @@ import EditStudentModal from "../components/EditStudentModal";
 import StudentHistoryModal from "../components/StudentHistoryModal";
 import StudentDetailModal from "../components/StudentDetailModal";
 import AttendanceModal from "../components/AttendanceModal";
+import AttendanceHistory from "../components/AttendanceHistory";
 import { IconClipboardCheck, IconPlus } from "../components/Icons";
 
 // La sede elegida se recuerda entre visitas.
@@ -50,6 +51,7 @@ export default function AdminDashboard() {
   } = useStudents();
 
   const [activeSede, setActiveSede] = useState(readStoredSede);
+  const [activeSection, setActiveSection] = useState("ALUMNOS");
   const [activeTab, setActiveTab] = useState("TODOS");
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("Todos");
@@ -163,6 +165,12 @@ export default function AdminDashboard() {
     await addStudent(toAlumnoPayload(form));
   };
 
+  /** Abre el listado de alumnos del grupo pulsado en el sidebar. */
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    setActiveSection("ALUMNOS");
+  };
+
   /**
    * Cambia de sede. Si el grupo activo no existe en la sede destino,
    * se vuelve a «Todos» para no dejar el listado vacío.
@@ -233,8 +241,10 @@ export default function AdminDashboard() {
         activeSede={activeSede}
         setActiveSede={handleSedeChange}
         sedeCounts={sedeCounts}
+        activeSection={activeSection}
+        setActiveSection={setActiveSection}
         activeTab={activeTab}
-        setActiveTab={setActiveTab}
+        setActiveTab={handleTabChange}
         counts={counts}
         total={sedeStats.total}
         userEmail={user?.email}
@@ -242,89 +252,117 @@ export default function AdminDashboard() {
       />
 
       <main className="dashboard-main">
-        <header className="page-head">
-          <div className="page-head-text">
-            <p className="eyebrow">
-              Panel administrativo
-              <span className="eyebrow-sep" aria-hidden="true" />
-              Sede {sedeLabel(activeSede)}
-              <span className="eyebrow-sep" aria-hidden="true" />
-              {monthLabel(currentMonth())}
-            </p>
-            <h1>{pageTitle}</h1>
-            <p className="page-subtitle">
-              {groupStudents.length}{" "}
-              {groupStudents.length === 1 ? "alumno" : "alumnos"} {scopeLabel}{" "}
-              sede {sedeLabel(activeSede)}
-            </p>
-          </div>
+        {activeSection === "ASISTENCIAS" ? (
+          <>
+            <header className="page-head">
+              <div className="page-head-text">
+                <p className="eyebrow">
+                  Panel administrativo
+                  <span className="eyebrow-sep" aria-hidden="true" />
+                  Sede {sedeLabel(activeSede)}
+                  <span className="eyebrow-sep" aria-hidden="true" />
+                  {monthLabel(currentMonth())}
+                </p>
+                <h1>Listas guardadas</h1>
+                <p className="page-subtitle">
+                  Clases con asistencia registrada en la sede{" "}
+                  {sedeLabel(activeSede)}
+                </p>
+              </div>
+            </header>
 
-          <div className="page-head-actions">
-            {GROUPS.includes(activeTab) && (
-              <button
-                type="button"
-                className="btn-secondary"
-                onClick={() =>
-                  setAttendance({ group: activeTab, sede: activeSede })
-                }
-                title={`Llamar a lista el grupo ${activeTab}`}
-              >
-                <IconClipboardCheck size={16} />
-                Llamar a lista
-              </button>
-            )}
+            <AttendanceHistory sede={activeSede} />
+          </>
+        ) : (
+          <>
+            <header className="page-head">
+              <div className="page-head-text">
+                <p className="eyebrow">
+                  Panel administrativo
+                  <span className="eyebrow-sep" aria-hidden="true" />
+                  Sede {sedeLabel(activeSede)}
+                  <span className="eyebrow-sep" aria-hidden="true" />
+                  {monthLabel(currentMonth())}
+                </p>
+                <h1>{pageTitle}</h1>
+                <p className="page-subtitle">
+                  {groupStudents.length}{" "}
+                  {groupStudents.length === 1 ? "alumno" : "alumnos"}{" "}
+                  {scopeLabel} sede {sedeLabel(activeSede)}
+                </p>
+              </div>
 
-            <button
-              type="button"
-              className="btn-primary"
-              onClick={() => setIsModalOpen(true)}
-            >
-              <IconPlus size={16} />
-              Añadir alumno
-            </button>
-          </div>
-        </header>
+              <div className="page-head-actions">
+                {GROUPS.includes(activeTab) && (
+                  <button
+                    type="button"
+                    className="btn-secondary"
+                    onClick={() =>
+                      setAttendance({ group: activeTab, sede: activeSede })
+                    }
+                    title={`Llamar a lista el grupo ${activeTab}`}
+                  >
+                    <IconClipboardCheck size={16} />
+                    Llamar a lista
+                  </button>
+                )}
 
-        <StatsBar
-          stats={sedeStats}
-          deudaTotal={deudaTotal}
-          sedeLabel={sedeLabel(activeSede)}
-        />
+                <button
+                  type="button"
+                  className="btn-primary"
+                  onClick={() => setIsModalOpen(true)}
+                >
+                  <IconPlus size={16} />
+                  Añadir alumno
+                </button>
+              </div>
+            </header>
 
-        <section className="panel" aria-label="Listado de alumnos">
-          <ActionToolbar
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            filter={filterStatus}
-            setFilter={setFilterStatus}
-            resultCount={displayStudents.length}
-          />
-
-          {actionError && <p className="banner-error">{actionError}</p>}
-
-          {error && (
-            <p className="banner-error">
-              {error}
-              <button type="button" onClick={() => refresh().catch(() => {})}>
-                Reintentar
-              </button>
-            </p>
-          )}
-
-          {loading ? (
-            <p className="empty-state">Cargando alumnos…</p>
-          ) : (
-            <StudentTable
-              students={displayStudents}
-              onDelete={handleDelete}
-              onEdit={setEditingStudent}
-              onHistory={setHistoryStudent}
-              onView={setViewingStudent}
-              onToggleMensualidad={handleToggleMensualidad}
-              busyId={busyId}
+            <StatsBar
+              stats={sedeStats}
+              deudaTotal={deudaTotal}
+              sedeLabel={sedeLabel(activeSede)}
             />
-          )}
-        </section>
+
+            <section className="panel" aria-label="Listado de alumnos">
+              <ActionToolbar
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                filter={filterStatus}
+                setFilter={setFilterStatus}
+                resultCount={displayStudents.length}
+              />
+
+              {actionError && <p className="banner-error">{actionError}</p>}
+
+              {error && (
+                <p className="banner-error">
+                  {error}
+                  <button
+                    type="button"
+                    onClick={() => refresh().catch(() => {})}
+                  >
+                    Reintentar
+                  </button>
+                </p>
+              )}
+
+              {loading ? (
+                <p className="empty-state">Cargando alumnos…</p>
+              ) : (
+                <StudentTable
+                  students={displayStudents}
+                  onDelete={handleDelete}
+                  onEdit={setEditingStudent}
+                  onHistory={setHistoryStudent}
+                  onView={setViewingStudent}
+                  onToggleMensualidad={handleToggleMensualidad}
+                  busyId={busyId}
+                />
+              )}
+            </section>
+          </>
+        )}
       </main>
 
       <AddStudentModal

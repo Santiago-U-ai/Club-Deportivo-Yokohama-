@@ -1,5 +1,5 @@
 import { SEDES, sedeLabel } from "../utils/adapters";
-import { IconLogOut, IconUsers } from "./Icons";
+import { IconClipboardCheck, IconLogOut, IconUsers } from "./Icons";
 
 const GROUPS = [
   { id: "TODOS", label: "Todos", hint: "Plantilla completa" },
@@ -13,6 +13,8 @@ export default function Sidebar({
   activeSede,
   setActiveSede,
   sedeCounts = {},
+  activeSection = "ALUMNOS",
+  setActiveSection,
   activeTab,
   setActiveTab,
   counts = {},
@@ -67,7 +69,8 @@ export default function Sidebar({
 
         {visibleGroups.map((group) => {
           const count = group.id === "TODOS" ? total : counts[group.id] ?? 0;
-          const isActive = activeTab === group.id;
+          const isActive =
+            activeSection === "ALUMNOS" && activeTab === group.id;
 
           return (
             <button
@@ -85,6 +88,26 @@ export default function Sidebar({
             </button>
           );
         })}
+      </nav>
+
+      <nav className="side-nav" aria-label="Asistencias">
+        <p className="side-nav-title">Asistencia</p>
+
+        <button
+          type="button"
+          className={`nav-item ${activeSection === "ASISTENCIAS" ? "active" : ""}`}
+          onClick={() => setActiveSection("ASISTENCIAS")}
+          aria-current={activeSection === "ASISTENCIAS" ? "page" : undefined}
+          title="Listas de asistencia guardadas"
+        >
+          <span className="nav-item-text">
+            <span className="nav-item-label">Listas guardadas</span>
+            <span className="nav-item-hint">Clases por día</span>
+          </span>
+          <span className="nav-item-icon">
+            <IconClipboardCheck size={15} />
+          </span>
+        </button>
       </nav>
 
       <div className="sidebar-footer">

@@ -180,6 +180,8 @@ export const alumnosApi = {
 export const asistenciasApi = {
   list: (params) =>
     API.get("/asistencias", { params }).then((res) => res.data),
+  clases: (params) =>
+    API.get("/asistencias/clases", { params }).then((res) => res.data),
   save: (payload) => API.post("/asistencias", payload).then((res) => res.data),
   resumen: (params) =>
     API.get("/asistencias/resumen", { params }).then((res) => res.data),

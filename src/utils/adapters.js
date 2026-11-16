@@ -201,6 +201,25 @@ export const formatShortDate = (value) => {
 };
 
 /**
+ * Fecha legible completa ("Sábado, 15 de noviembre de 2026") o "—".
+ */
+export const formatLongDate = (value) => {
+  if (!value) return "—";
+
+  const date = new Date(`${value}T00:00:00`);
+  if (Number.isNaN(date.getTime())) return "—";
+
+  const text = date.toLocaleDateString("es-CO", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
+  return text.charAt(0).toUpperCase() + text.slice(1);
+};
+
+/**
  * Fecha legible para la tabla ("04 Nov 2026" o "Sin pagos").
  */
 export const formatDate = (value) => {
