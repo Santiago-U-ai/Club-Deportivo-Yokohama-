@@ -430,6 +430,36 @@ select:focus-visible {
   transform: translateY(0);
 }
 
+/* Acciones del encabezado: alta de alumno y llamar a lista */
+.page-head-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 15px;
+  color: var(--paper-dim);
+  background: var(--ink-2);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-secondary:hover {
+  color: var(--paper);
+  background: var(--ink-3);
+  border-color: #3a4048;
+}
+
 /* ----------------------------------------------------------------- KPIs */
 
 .stats-bar {
@@ -1094,6 +1124,24 @@ select:focus-visible {
 
   .btn-primary {
     justify-content: center;
+  }
+
+  .page-head-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .page-head-actions .btn-primary,
+  .page-head-actions .btn-secondary {
+    justify-content: center;
+    padding: 10px 12px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .page-head-actions svg {
+    flex: 0 0 auto;
   }
 
   .stats-bar {

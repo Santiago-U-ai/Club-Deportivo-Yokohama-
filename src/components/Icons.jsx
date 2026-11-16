@@ -152,3 +152,14 @@ export function IconCalendar(props) {
     </Icon>
   );
 }
+
+/** Llamar a lista: tabla con un visto de asistencia. */
+export function IconClipboardCheck(props) {
+  return (
+    <Icon {...props}>
+      <path d="M9 4.5H7.5A1.5 1.5 0 0 0 6 6v13a1.5 1.5 0 0 0 1.5 1.5h9A1.5 1.5 0 0 0 18 19V6a1.5 1.5 0 0 0-1.5-1.5H15" />
+      <rect x="9" y="3" width="6" height="3.5" rx="1" />
+      <path d="M9.5 13.5l2 2 3.5-4" />
+    </Icon>
+  );
+}

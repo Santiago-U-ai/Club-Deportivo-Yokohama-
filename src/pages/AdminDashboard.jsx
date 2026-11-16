@@ -4,6 +4,7 @@ import { useStudents } from "../hooks/useStudents";
 import { apiErrorMessage } from "../services/api";
 import {
   currentMonth,
+  GROUPS,
   monthLabel,
   SEDES,
   sedeLabel,
@@ -18,7 +19,8 @@ import AddStudentModal from "../components/AddStudentModal";
 import EditStudentModal from "../components/EditStudentModal";
 import StudentHistoryModal from "../components/StudentHistoryModal";
 import StudentDetailModal from "../components/StudentDetailModal";
-import { IconPlus } from "../components/Icons";
+import AttendanceModal from "../components/AttendanceModal";
+import { IconClipboardCheck, IconPlus } from "../components/Icons";
 
 // La sede elegida se recuerda entre visitas.
 const SEDE_STORAGE_KEY = "yh_sede";
@@ -55,6 +57,9 @@ export default function AdminDashboard() {
   const [editingStudent, setEditingStudent] = useState(null);
   const [historyStudent, setHistoryStudent] = useState(null);
   const [viewingStudent, setViewingStudent] = useState(null);
+  // Grupo y sede de la lista abierta: así cambiar de pestaña en el sidebar
+  // no altera la asistencia que se está pasando.
+  const [attendance, setAttendance] = useState(null);
   const [busyId, setBusyId] = useState(null);
   const [actionError, setActionError] = useState("");
 
@@ -130,6 +135,20 @@ export default function AdminDashboard() {
       });
   }, [groupStudents, searchQuery, filterStatus]);
 
+  // Alumnos activos del grupo y sede de la lista abierta.
+  const attendanceStudents = useMemo(() => {
+    if (!attendance) return [];
+
+    return students
+      .filter(
+        (student) =>
+          student.sede === attendance.sede &&
+          student.group === attendance.group &&
+          student.activo,
+      )
+      .sort((a, b) => a.name.localeCompare(b.name, "es"));
+  }, [students, attendance]);
+
   const pageTitle = activeTab === "TODOS" ? "Alumnos" : activeTab;
 
   const scopeLabel =
@@ -152,6 +171,7 @@ export default function AdminDashboard() {
     if (sede === activeSede) return;
 
     setActiveSede(sede);
+    setAttendance(null);
 
     const tabExists =
       activeTab === "TODOS" ||
@@ -239,14 +259,30 @@ export default function AdminDashboard() {
             </p>
           </div>
 
-          <button
-            type="button"
-            className="btn-primary"
-            onClick={() => setIsModalOpen(true)}
-          >
-            <IconPlus size={16} />
-            Añadir alumno
-          </button>
+          <div className="page-head-actions">
+            {GROUPS.includes(activeTab) && (
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={() =>
+                  setAttendance({ group: activeTab, sede: activeSede })
+                }
+                title={`Llamar a lista el grupo ${activeTab}`}
+              >
+                <IconClipboardCheck size={16} />
+                Llamar a lista
+              </button>
+            )}
+
+            <button
+              type="button"
+              className="btn-primary"
+              onClick={() => setIsModalOpen(true)}
+            >
+              <IconPlus size={16} />
+              Añadir alumno
+            </button>
+          </div>
         </header>
 
         <StatsBar
@@ -328,6 +364,15 @@ export default function AdminDashboard() {
             setViewingStudent(null);
             setHistoryStudent(student);
           }}
+        />
+      )}
+
+      {attendance && (
+        <AttendanceModal
+          group={attendance.group}
+          sede={attendance.sede}
+          students={attendanceStudents}
+          onClose={() => setAttendance(null)}
         />
       )}
     </div>

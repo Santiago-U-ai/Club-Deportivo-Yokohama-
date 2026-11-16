@@ -177,6 +177,14 @@ export const alumnosApi = {
   remove: (id) => API.delete(`/alumnos/${id}`).then((res) => res.data),
 };
 
+export const asistenciasApi = {
+  list: (params) =>
+    API.get("/asistencias", { params }).then((res) => res.data),
+  save: (payload) => API.post("/asistencias", payload).then((res) => res.data),
+  resumen: (params) =>
+    API.get("/asistencias/resumen", { params }).then((res) => res.data),
+};
+
 export const pagosApi = {
   list: (params) => API.get("/pagos", { params }).then((res) => res.data),
   me: () => API.get("/pagos/me").then((res) => res.data),

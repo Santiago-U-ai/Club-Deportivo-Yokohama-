@@ -46,6 +46,14 @@ export const currentMonth = () => {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
 };
 
+/** Hora local en formato 24 h `HH:MM`, para precargar la lista. */
+export const currentTime = () => {
+  const now = new Date();
+  const hours = String(now.getHours()).padStart(2, "0");
+  const minutes = String(now.getMinutes()).padStart(2, "0");
+  return `${hours}:${minutes}`;
+};
+
 const MONTHS = [
   "Ene",
   "Feb",
